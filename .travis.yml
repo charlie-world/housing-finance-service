@@ -1,0 +1,16 @@
+language: scala
+
+scala:
+  - 2.12.7
+
+cache:
+  directories:
+    - .autoconf
+    - $HOME/.m2
+
+services:
+  - docker
+
+script:
+  - sbt clean scalafmt::test test
+  - sbt 'set test in assembly := {}' clean assembly
