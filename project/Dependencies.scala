@@ -4,7 +4,6 @@ object Dependencies {
   private lazy val scalaTestVersion = "3.0.5"
   private lazy val monixVersion = "2.3.0"
   private lazy val akkaHttpVersion = "10.0.11"
-  private lazy val akkaVersion = "2.5.11"
   private lazy val slf4jVersion = "1.7.25"
   private lazy val jwtAuthVersion = "3.8.2"
   private lazy val slickVersion = "3.3.0"
@@ -12,7 +11,9 @@ object Dependencies {
   
   lazy val testDependencies: Seq[ModuleID] = Seq(
     "org.scalatest" %% "scalatest"
-  ).map(_ % scalaTestVersion)
+  ).map(_ % scalaTestVersion) ++ Seq(
+    "com.typesafe.akka" %% "akka-http-testkit"
+  ).map(_ % akkaHttpVersion)
 
   lazy val akkaHttpDependencies: Seq[ModuleID] = Seq(
     "com.typesafe.akka" %% "akka-http",

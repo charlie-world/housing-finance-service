@@ -11,7 +11,7 @@ import monix.eval.Task
 import slick.jdbc.MySQLProfile.api._
 
 trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
-  this: MysqlDatabaseConfiguration =>
+  this: MysqlDatabaseConfiguration ⇒
 
   override def findAllYearlyAmountAverageByInstituteName(
     instituteName: String
@@ -23,7 +23,7 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
             TableQuery[MonthlyCreditGuaranteeTable]
               .groupBy(_.yearlyCreditGuaranteeId)
               .map {
-                case (yearlyCreditGuaranteeId, q) =>
+                case (yearlyCreditGuaranteeId, q) ⇒
                   (
                     yearlyCreditGuaranteeId,
                     q.map(_.amount).avg.getOrElse(0L),
@@ -31,7 +31,7 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
               }
               .sortBy(_._2.desc)
               .flatMap {
-                case (yearlyCreditGuaranteeId, averageAmount) =>
+                case (yearlyCreditGuaranteeId, averageAmount) ⇒
                   TableQuery[YearlyCreditGuaranteeTable]
                     .join(TableQuery[InstituteTable])
                     .on(_.instituteId === _.instituteId)
@@ -41,7 +41,7 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
                           yearly.yearlyCreditGuaranteeId === yearlyCreditGuaranteeId
                     }
                     .map {
-                      case (yearly, institute) =>
+                      case (yearly, institute) ⇒
                         (
                           yearly.year,
                           institute.instituteName,
@@ -62,7 +62,7 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
             TableQuery[MonthlyCreditGuaranteeTable]
               .groupBy(_.yearlyCreditGuaranteeId)
               .map {
-                case (yearlyCreditGuaranteeId, q) =>
+                case (yearlyCreditGuaranteeId, q) ⇒
                   (
                     yearlyCreditGuaranteeId,
                     q.map(_.amount).sum.getOrElse(0L),
@@ -71,13 +71,13 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
               .sortBy(_._2.desc)
               .take(1)
               .flatMap {
-                case (yearlyCreditGuaranteeId, totalAmount) =>
+                case (yearlyCreditGuaranteeId, totalAmount) ⇒
                   TableQuery[YearlyCreditGuaranteeTable]
                     .join(TableQuery[InstituteTable])
                     .on(_.instituteId === _.instituteId)
                     .filter(_._1.yearlyCreditGuaranteeId === yearlyCreditGuaranteeId)
                     .map {
-                      case (yearly, institute) =>
+                      case (yearly, institute) ⇒
                         (
                           yearly.year,
                           institute.instituteName,
