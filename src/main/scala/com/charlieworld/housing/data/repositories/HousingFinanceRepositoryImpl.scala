@@ -1,12 +1,17 @@
 package com.charlieworld.housing.data.repositories
 
 import com.charlieworld.housing.data.MysqlDatabaseConfiguration
+import com.charlieworld.housing.data.persistance.entities.{
+  MonthlyCreditGuarantee,
+  YearlyCreditGuarantee
+}
 import com.charlieworld.housing.data.persistance.tables.{
   InstituteTable,
   MonthlyCreditGuaranteeTable,
   YearlyCreditGuaranteeTable
 }
 import com.charlieworld.housing.entities.{MonthlyInstituteAmount, YearlyInstituteAmount}
+import com.charlieworld.housing.models.HousingFinanceDataReq
 import monix.eval.Task
 import slick.jdbc.MySQLProfile.api._
 
@@ -92,5 +97,78 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
       )
       .map(_.headOption)
 
-  override def saveAll(entities: Seq[_]): Task[_] = ???
+  override def findYearlyCreditGuaranteeByYearAndInstituteId(
+    year: Int,
+    instituteId: Long
+  ): Task[Seq[Long]] =
+    Task
+      .deferFuture(
+        mysql.run(
+          TableQuery[YearlyCreditGuaranteeTable]
+            .filter { y ⇒
+              y.instituteId === instituteId &&
+              y.year === year
+            }
+            .map(_.yearlyCreditGuaranteeId)
+            .take(1)
+            .result
+        )
+      )
+
+  override def saveYearlyCreditGuarantee(year: Int, instituteId: Long): Task[Long] =
+    Task.deferFuture(
+      mysql.run(
+        TableQuery[YearlyCreditGuaranteeTable]
+          .returning(
+            TableQuery[YearlyCreditGuaranteeTable].map(_.yearlyCreditGuaranteeId)
+          )
+          .forceInsert(
+            YearlyCreditGuarantee(
+              None,
+              year,
+              instituteId,
+            )
+          )
+      )
+    )
+
+  override def saveAllMonthlyCreditGuarantee(
+    entities: Seq[HousingFinanceDataReq],
+    yearlyCreditGuaranteeId: Long
+  ): Task[_] =
+    Task
+      .deferFuture(
+        mysql.run(
+          TableQuery[MonthlyCreditGuaranteeTable]
+            .forceInsertAll(
+              entities.map(
+                e ⇒
+                  MonthlyCreditGuarantee(
+                    None,
+                    yearlyCreditGuaranteeId,
+                    e.month,
+                    e.amount,
+                )
+              )
+            )
+        )
+      )
+
+  override def saveAll(entities: Seq[HousingFinanceDataReq]): Task[_] =
+    Task
+      .gatherUnordered(
+        entities
+          .groupBy(e ⇒ (e.instituteId, e.year))
+          .map {
+            case ((insId, year), ents) ⇒
+              findYearlyCreditGuaranteeByYearAndInstituteId(year, insId)
+                .flatMap {
+                  case Nil ⇒
+                    saveYearlyCreditGuarantee(year, insId)
+                      .flatMap(saveAllMonthlyCreditGuarantee(ents, _))
+                  case yearlyCreditGuaranteeId :: Nil ⇒
+                    saveAllMonthlyCreditGuarantee(ents, yearlyCreditGuaranteeId)
+                }
+          }
+      )
 }

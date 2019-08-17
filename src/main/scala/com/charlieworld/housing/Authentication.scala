@@ -28,7 +28,7 @@ trait Authentication {
       case Some(token) ⇒
         verify(token) match {
           case Success(userId) ⇒ provide(userId)
-          case Failure(_)      ⇒ complete(StatusCodes.Unauthorized)
+          case Failure(_) ⇒ complete(StatusCodes.Unauthorized)
         }
       case None ⇒ complete(StatusCodes.Unauthorized)
     }
