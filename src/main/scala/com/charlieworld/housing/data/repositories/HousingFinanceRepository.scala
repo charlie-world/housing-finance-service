@@ -16,6 +16,6 @@ trait HousingFinanceRepository {
   def saveAllMonthlyCreditGuarantee(
     entities: Seq[HousingFinanceDataReq],
     yearlyCreditGuaranteeId: Long
-  ): Task[_]
+  ): Task[Seq[Long]]
   def saveYearlyCreditGuarantee(year: Int, instituteId: Long): Task[Long]
 }

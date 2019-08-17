@@ -8,12 +8,17 @@ object Dependencies {
   private lazy val jwtAuthVersion = "3.8.2"
   private lazy val slickVersion = "3.3.0"
   private lazy val mysqlConnectorVersion = "8.0.17"
+  private lazy val mockitoVersion = "1.5.14"
   
   lazy val testDependencies: Seq[ModuleID] = Seq(
     "org.scalatest" %% "scalatest"
-  ).map(_ % scalaTestVersion) ++ Seq(
+  ).map(_ % scalaTestVersion).map(_ % Test) ++ Seq(
     "com.typesafe.akka" %% "akka-http-testkit"
-  ).map(_ % akkaHttpVersion)
+  ).map(_ % akkaHttpVersion).map(_ % Test) ++ Seq(
+    "org.mockito" %% "mockito-scala-scalatest"
+  ).map(_ % mockitoVersion).map(_ % Test) ++ Seq(
+    "com.typesafe.slick" %% "slick-testkit"
+  ).map(_ % slickVersion).map(_ % Test)
 
   lazy val akkaHttpDependencies: Seq[ModuleID] = Seq(
     "com.typesafe.akka" %% "akka-http",

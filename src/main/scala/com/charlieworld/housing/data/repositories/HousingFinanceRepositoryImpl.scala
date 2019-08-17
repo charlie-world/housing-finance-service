@@ -135,11 +135,12 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
   override def saveAllMonthlyCreditGuarantee(
     entities: Seq[HousingFinanceDataReq],
     yearlyCreditGuaranteeId: Long
-  ): Task[_] =
+  ): Task[Seq[Long]] =
     Task
       .deferFuture(
         mysql.run(
           TableQuery[MonthlyCreditGuaranteeTable]
+            .returning(TableQuery[MonthlyCreditGuaranteeTable].map(_.monthlyCreditGuaranteeId))
             .forceInsertAll(
               entities.map(
                 e ⇒
