@@ -9,7 +9,11 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import org.scalatest.{FlatSpecLike, Matchers}
 
-class AuthenticationSpec extends Matchers with FlatSpecLike with ScalatestRouteTest with Authentication {
+class AuthenticationSpec
+  extends Matchers
+  with FlatSpecLike
+  with ScalatestRouteTest
+  with Authentication {
 
   val routes: Route =
     pathEndOrSingleSlash {
@@ -36,6 +40,7 @@ class AuthenticationSpec extends Matchers with FlatSpecLike with ScalatestRouteT
 }
 
 object AuthenticationSpec {
+
   def createToken(userId: String): String = {
     val algorithm = Algorithm.HMAC256("charlie-world")
     JWT.create().withClaim("user_id", userId).sign(algorithm)

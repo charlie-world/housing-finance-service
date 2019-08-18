@@ -5,6 +5,7 @@ import com.charlieworld.housing.entities.{
   HousingFinanceFileEntity,
   InstituteYearlyAmount,
   TopOneYearlyAmountResponse,
+  YearlyAmountResponse,
   YearlyAvgAmountResponse,
   YearlyTotalAmountResponse
 }
@@ -18,7 +19,11 @@ trait HousingFinanceServiceImpl extends HousingFinanceService {
   this: HousingFinanceRepository with FileRead ⇒
   override def findMinAndMaxYearlyAvgAmount(instituteName: String): Task[YearlyAvgAmountResponse] =
     findMinMaxYearlyCreditGuaranteeAvgAmount(instituteName).map(
-      YearlyAvgAmountResponse(instituteName, _)
+      data ⇒
+        YearlyAvgAmountResponse(
+          instituteName,
+          data.map(d ⇒ YearlyAmountResponse(d.year, d.totalAmount))
+      )
     )
 
   override def findTopOneYearlyAmount(): Task[TopOneYearlyAmountResponse] =
@@ -41,6 +46,7 @@ trait HousingFinanceServiceImpl extends HousingFinanceService {
           )
       }
       .toSeq
+      .sortBy(_.year)
 
   override def saveYearlyAndMonthlyCreditGuarantee(
     instituteId: Long,
