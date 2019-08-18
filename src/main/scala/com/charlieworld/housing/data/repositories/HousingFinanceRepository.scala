@@ -4,13 +4,13 @@ import com.charlieworld.housing.data.persistance.entities.{Institute, YearlyCred
 import monix.eval.Task
 
 trait HousingFinanceRepository {
-  def findTopOneYearlyCreditGuaranteeTotalAmount(): Task[Option[(String, YearlyCreditGuarantee)]]
+  def findTopOneYearlyCreditGuaranteeTotalAmount(): Task[Option[(Int, String)]]
 
   def findMinMaxYearlyCreditGuaranteeAvgAmount(
     instituteName: String
   ): Task[Seq[YearlyCreditGuarantee]]
 
-  def findInstitute(instituteName: String): Task[Option[Institute]]
+  def findAllInstitute(): Task[Seq[Institute]]
 
   def saveYearlyCreditGuarantee(
     year: Int,
@@ -20,8 +20,7 @@ trait HousingFinanceRepository {
   ): Task[Long]
 
   def saveMonthlyCreditGuarantee(
-    month: Int,
     yearlyCreditGuaranteeId: Long,
-    amount: Long
-  ): Task[Long]
+    data: Seq[(Int, Long)]
+  ): Task[Seq[Long]]
 }

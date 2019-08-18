@@ -17,8 +17,7 @@ import slick.jdbc.MySQLProfile.api._
 trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
   this: MysqlDatabaseConfiguration ⇒
 
-  override def findTopOneYearlyCreditGuaranteeTotalAmount()
-    : Task[Option[(String, YearlyCreditGuarantee)]] =
+  override def findTopOneYearlyCreditGuaranteeTotalAmount(): Task[Option[(Int, String)]] =
     Task
       .deferFuture(
         mysql.run(
@@ -29,7 +28,7 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
             .take(1)
             .map {
               case (ins, yearly) ⇒
-                (ins.instituteName, yearly)
+                (yearly.year, ins.instituteName)
             }
             .result
         )
@@ -56,17 +55,13 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
         case head :: tail ⇒ Seq(Some(head), tail.lastOption).flatten
       }
 
-  override def findInstitute(instituteName: String): Task[Option[Institute]] =
+  override def findAllInstitute(): Task[Seq[Institute]] =
     Task
       .deferFuture(
         mysql.run(
-          TableQuery[InstituteTable]
-            .filter(_.instituteName === instituteName)
-            .take(1)
-            .result
+          TableQuery[InstituteTable].result
         )
       )
-      .map(_.headOption)
 
   override def saveYearlyCreditGuarantee(
     year: Int,
@@ -91,21 +86,23 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
     )
 
   override def saveMonthlyCreditGuarantee(
-    month: Int,
     yearlyCreditGuaranteeId: Long,
-    amount: Long
-  ): Task[Long] =
+    data: Seq[(Int, Long)]
+  ): Task[Seq[Long]] =
     Task.deferFuture(
       mysql.run(
         TableQuery[MonthlyCreditGuaranteeTable]
           .returning(TableQuery[MonthlyCreditGuaranteeTable].map(_.monthlyCreditGuaranteeId))
-          .forceInsert(
-            MonthlyCreditGuarantee(
-              None,
-              yearlyCreditGuaranteeId,
-              month,
-              amount,
-            )
+          .forceInsertAll(
+            data.map {
+              case (month, amount) ⇒
+                MonthlyCreditGuarantee(
+                  None,
+                  yearlyCreditGuaranteeId,
+                  month,
+                  amount,
+                )
+            }
           )
       )
     )
