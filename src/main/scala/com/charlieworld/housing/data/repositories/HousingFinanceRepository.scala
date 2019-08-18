@@ -1,21 +1,27 @@
 package com.charlieworld.housing.data.repositories
 
-import com.charlieworld.housing.entities.{MonthlyInstituteAmount, YearlyInstituteAmount}
-import com.charlieworld.housing.models.HousingFinanceDataReq
+import com.charlieworld.housing.data.persistance.entities.{Institute, YearlyCreditGuarantee}
 import monix.eval.Task
 
 trait HousingFinanceRepository {
-  def saveAll(entities: Seq[HousingFinanceDataReq]): Task[_]
-  def findTop1YearlyInstituteAmount(): Task[Option[YearlyInstituteAmount]]
+  def findTopOneYearlyCreditGuaranteeTotalAmount(): Task[Option[(String, YearlyCreditGuarantee)]]
 
-  def findAllYearlyAmountAverageByInstituteName(
+  def findMinMaxYearlyCreditGuaranteeAvgAmount(
     instituteName: String
-  ): Task[Seq[MonthlyInstituteAmount]]
-  def findYearlyCreditGuaranteeByYearAndInstituteId(year: Int, instituteId: Long): Task[Seq[Long]]
+  ): Task[Seq[YearlyCreditGuarantee]]
 
-  def saveAllMonthlyCreditGuarantee(
-    entities: Seq[HousingFinanceDataReq],
-    yearlyCreditGuaranteeId: Long
-  ): Task[_]
-  def saveYearlyCreditGuarantee(year: Int, instituteId: Long): Task[Long]
+  def findInstitute(instituteName: String): Task[Option[Institute]]
+
+  def saveYearlyCreditGuarantee(
+    year: Int,
+    instituteId: Long,
+    totalAmount: Long,
+    averageAmount: Long
+  ): Task[Long]
+
+  def saveMonthlyCreditGuarantee(
+    month: Int,
+    yearlyCreditGuaranteeId: Long,
+    amount: Long
+  ): Task[Long]
 }

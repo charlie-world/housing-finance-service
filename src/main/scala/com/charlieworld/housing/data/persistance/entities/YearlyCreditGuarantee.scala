@@ -4,4 +4,6 @@ case class YearlyCreditGuarantee(
   yearlyCreditGuaranteeId: Option[Long],
   year: Int,
   instituteId: Long,
+  averageAmount: Long,
+  totalAmount: Long,
 )

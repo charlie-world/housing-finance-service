@@ -13,6 +13,8 @@ class YearlyCreditGuaranteeTable(tag: Tag)
     column[Long]("yearly_credit_guarantee_id", O.PrimaryKey, O.AutoInc)
   def year: Rep[Int] = column[Int]("year")
   def instituteId: Rep[Long] = column[Long]("institute_id")
+  def averageAmount: Rep[Long] = column[Long]("average_amount")
+  def totalAmount: Rep[Long] = column[Long]("total_amount")
 
   def createdAt: Rep[LocalDateTime] =
     column[LocalDateTime]("created_at", O.Default(LocalDateTime.now()))
@@ -21,5 +23,5 @@ class YearlyCreditGuaranteeTable(tag: Tag)
     column[LocalDateTime]("updated_at", O.Default(LocalDateTime.now()))
 
   def *(): ProvenShape[YearlyCreditGuarantee] =
-    (yearlyCreditGuaranteeId.?, year, instituteId) <> (YearlyCreditGuarantee.tupled, YearlyCreditGuarantee.unapply)
+    (yearlyCreditGuaranteeId.?, year, instituteId, averageAmount, totalAmount) <> (YearlyCreditGuarantee.tupled, YearlyCreditGuarantee.unapply)
 }

@@ -2,6 +2,7 @@ package com.charlieworld.housing.data.repositories
 
 import com.charlieworld.housing.data.MysqlDatabaseConfiguration
 import com.charlieworld.housing.data.persistance.entities.{
+  Institute,
   MonthlyCreditGuarantee,
   YearlyCreditGuarantee
 }
@@ -10,165 +11,102 @@ import com.charlieworld.housing.data.persistance.tables.{
   MonthlyCreditGuaranteeTable,
   YearlyCreditGuaranteeTable
 }
-import com.charlieworld.housing.entities.{MonthlyInstituteAmount, YearlyInstituteAmount}
-import com.charlieworld.housing.models.HousingFinanceDataReq
 import monix.eval.Task
 import slick.jdbc.MySQLProfile.api._
 
 trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
   this: MysqlDatabaseConfiguration ⇒
 
-  override def findAllYearlyAmountAverageByInstituteName(
-    instituteName: String
-  ): Task[Seq[MonthlyInstituteAmount]] =
-    Task
-      .deferFuture(
-        mysql
-          .run(
-            TableQuery[MonthlyCreditGuaranteeTable]
-              .groupBy(_.yearlyCreditGuaranteeId)
-              .map {
-                case (yearlyCreditGuaranteeId, q) ⇒
-                  (
-                    yearlyCreditGuaranteeId,
-                    q.map(_.amount).avg.getOrElse(0L),
-                  )
-              }
-              .sortBy(_._2.desc)
-              .flatMap {
-                case (yearlyCreditGuaranteeId, averageAmount) ⇒
-                  TableQuery[YearlyCreditGuaranteeTable]
-                    .join(TableQuery[InstituteTable])
-                    .on(_.instituteId === _.instituteId)
-                    .filter {
-                      case (yearly, inst) ⇒
-                        inst.instituteName === instituteName &&
-                          yearly.yearlyCreditGuaranteeId === yearlyCreditGuaranteeId
-                    }
-                    .map {
-                      case (yearly, institute) ⇒
-                        (
-                          yearly.year,
-                          institute.instituteName,
-                          institute.instituteCode,
-                          averageAmount,
-                        ) <> (MonthlyInstituteAmount.tupled, MonthlyInstituteAmount.unapply)
-                    }
-              }
-              .result
-          )
-      )
-
-  override def findTop1YearlyInstituteAmount(): Task[Option[YearlyInstituteAmount]] =
-    Task
-      .deferFuture(
-        mysql
-          .run(
-            TableQuery[MonthlyCreditGuaranteeTable]
-              .groupBy(_.yearlyCreditGuaranteeId)
-              .map {
-                case (yearlyCreditGuaranteeId, q) ⇒
-                  (
-                    yearlyCreditGuaranteeId,
-                    q.map(_.amount).sum.getOrElse(0L),
-                  )
-              }
-              .sortBy(_._2.desc)
-              .take(1)
-              .flatMap {
-                case (yearlyCreditGuaranteeId, totalAmount) ⇒
-                  TableQuery[YearlyCreditGuaranteeTable]
-                    .join(TableQuery[InstituteTable])
-                    .on(_.instituteId === _.instituteId)
-                    .filter(_._1.yearlyCreditGuaranteeId === yearlyCreditGuaranteeId)
-                    .map {
-                      case (yearly, institute) ⇒
-                        (
-                          yearly.year,
-                          institute.instituteName,
-                          institute.instituteCode,
-                          totalAmount,
-                        ) <> (YearlyInstituteAmount.tupled, YearlyInstituteAmount.unapply)
-                    }
-                    .take(1)
-              }
-              .result
-          )
-      )
-      .map(_.headOption)
-
-  override def findYearlyCreditGuaranteeByYearAndInstituteId(
-    year: Int,
-    instituteId: Long
-  ): Task[Seq[Long]] =
+  override def findTopOneYearlyCreditGuaranteeTotalAmount()
+    : Task[Option[(String, YearlyCreditGuarantee)]] =
     Task
       .deferFuture(
         mysql.run(
-          TableQuery[YearlyCreditGuaranteeTable]
-            .filter { y ⇒
-              y.instituteId === instituteId &&
-              y.year === year
+          TableQuery[InstituteTable]
+            .join(TableQuery[YearlyCreditGuaranteeTable])
+            .on(_.instituteId === _.instituteId)
+            .sortBy(_._2.totalAmount.desc)
+            .take(1)
+            .map {
+              case (ins, yearly) ⇒
+                (ins.instituteName, yearly)
             }
-            .map(_.yearlyCreditGuaranteeId)
+            .result
+        )
+      )
+      .map(_.headOption)
+
+  override def findMinMaxYearlyCreditGuaranteeAvgAmount(
+    instituteName: String
+  ): Task[Seq[YearlyCreditGuarantee]] =
+    Task
+      .deferFuture(
+        mysql.run(
+          TableQuery[InstituteTable]
+            .join(TableQuery[YearlyCreditGuaranteeTable])
+            .on(_.instituteId === _.instituteId)
+            .filter(_._1.instituteName === instituteName)
+            .sortBy(_._2.averageAmount.asc)
+            .map(_._2)
+            .result
+        )
+      )
+      .map {
+        case Nil ⇒ Seq.empty
+        case head :: tail ⇒ Seq(Some(head), tail.lastOption).flatten
+      }
+
+  override def findInstitute(instituteName: String): Task[Option[Institute]] =
+    Task
+      .deferFuture(
+        mysql.run(
+          TableQuery[InstituteTable]
+            .filter(_.instituteName === instituteName)
             .take(1)
             .result
         )
       )
+      .map(_.headOption)
 
-  override def saveYearlyCreditGuarantee(year: Int, instituteId: Long): Task[Long] =
+  override def saveYearlyCreditGuarantee(
+    year: Int,
+    instituteId: Long,
+    totalAmount: Long,
+    averageAmount: Long
+  ): Task[Long] =
     Task.deferFuture(
       mysql.run(
         TableQuery[YearlyCreditGuaranteeTable]
-          .returning(
-            TableQuery[YearlyCreditGuaranteeTable].map(_.yearlyCreditGuaranteeId)
-          )
+          .returning(TableQuery[YearlyCreditGuaranteeTable].map(_.instituteId))
           .forceInsert(
             YearlyCreditGuarantee(
               None,
               year,
               instituteId,
+              averageAmount,
+              totalAmount,
             )
           )
       )
     )
 
-  override def saveAllMonthlyCreditGuarantee(
-    entities: Seq[HousingFinanceDataReq],
-    yearlyCreditGuaranteeId: Long
-  ): Task[_] =
-    Task
-      .deferFuture(
-        mysql.run(
-          TableQuery[MonthlyCreditGuaranteeTable]
-            .forceInsertAll(
-              entities.map(
-                e ⇒
-                  MonthlyCreditGuarantee(
-                    None,
-                    yearlyCreditGuaranteeId,
-                    e.month,
-                    e.amount,
-                )
-              )
+  override def saveMonthlyCreditGuarantee(
+    month: Int,
+    yearlyCreditGuaranteeId: Long,
+    amount: Long
+  ): Task[Long] =
+    Task.deferFuture(
+      mysql.run(
+        TableQuery[MonthlyCreditGuaranteeTable]
+          .returning(TableQuery[MonthlyCreditGuaranteeTable].map(_.monthlyCreditGuaranteeId))
+          .forceInsert(
+            MonthlyCreditGuarantee(
+              None,
+              yearlyCreditGuaranteeId,
+              month,
+              amount,
             )
-        )
+          )
       )
-
-  override def saveAll(entities: Seq[HousingFinanceDataReq]): Task[_] =
-    Task
-      .gatherUnordered(
-        entities
-          .groupBy(e ⇒ (e.instituteId, e.year))
-          .map {
-            case ((insId, year), ents) ⇒
-              findYearlyCreditGuaranteeByYearAndInstituteId(year, insId)
-                .flatMap {
-                  case Nil ⇒
-                    saveYearlyCreditGuarantee(year, insId)
-                      .flatMap(saveAllMonthlyCreditGuarantee(ents, _))
-                  case yearlyCreditGuaranteeId :: Nil ⇒
-                    saveAllMonthlyCreditGuarantee(ents, yearlyCreditGuaranteeId)
-                }
-          }
-      )
+    )
 }
