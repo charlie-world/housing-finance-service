@@ -1,7 +1,6 @@
 package com.charlieworld.housing.services
 
 import com.charlieworld.housing.entities._
-import com.charlieworld.housing.exceptions.EntityNotFound
 import monix.execution.Scheduler.Implicits.global
 import org.scalatest.{FlatSpecLike, Matchers}
 
@@ -52,21 +51,7 @@ class HousingFinanceServiceSpec extends Matchers with FlatSpecLike {
     Await.result(
       impl.upsertCreditGuarantee(Fixtures.fileRows, Fixtures.allInstitutes).runAsync,
       timeout
-    ) shouldBe Seq((1L, 2018), (1L, 2019))
-  }
-
-  it should "thrown not implemented error if institute is not exist" in {
-    a[EntityNotFound] shouldBe thrownBy {
-      Await.result(
-        impl
-          .upsertCreditGuarantee(
-            Seq(HousingFinanceFileEntity("기타", 2018, 3, 1000L)),
-            Fixtures.allInstitutes
-          )
-          .runAsync,
-        timeout
-      )
-    }
+    ) shouldBe Seq((1L, 2019), (1L, 2018))
   }
 
   "upsertSummary" should "return summary if success to upsert summary" in {

@@ -35,17 +35,17 @@ trait HousingFinanceServiceImpl extends HousingFinanceService {
 
   override def upsertSummary(institueId: Long, year: Int): Task[Summary] =
     findCreditGuaranteeByInstituteIdAndYear(institueId, year)
-      .flatMap { creditGuarantees =>
+      .flatMap { creditGuarantees ⇒
         val sum = creditGuarantees.map(_.amount).sum
         val avg = round(
           creditGuarantees.map(_.amount).sum.toDouble / creditGuarantees.size
         )
         findSummaryByInstituteId(institueId, year)
           .flatMap {
-            case Some(s) =>
+            case Some(s) ⇒
               updateSummary(s.summaryId.get, sum, avg)
-                .map(_ => s.copy(sumAmount = sum, avgAmount = avg))
-            case None =>
+                .map(_ ⇒ s.copy(sumAmount = sum, avgAmount = avg))
+            case None ⇒
               saveSummaries(institueId, year, sum, avg)
           }
       }
@@ -55,30 +55,23 @@ trait HousingFinanceServiceImpl extends HousingFinanceService {
     institutes: Seq[Institute]
   ): Task[Seq[(Long, Int)]] =
     Task.gatherUnordered(
-      es.groupBy(e => (e.instituteName, e.year))
+      es.groupBy(e ⇒ (e.instituteId, e.year))
         .map {
-          case ((insName, year), ess) =>
-            institutes.find(_.instituteName == insName).flatMap(_.instituteId) match {
-              case Some(insId) =>
-                Task
-                  .gatherUnordered(
-                    ess.map(
-                      h =>
-                        findCreditGuaranteeByInstituteIdAndYearAndMonth(insId, year, h.month)
-                          .flatMap {
-                            case Some(c) =>
-                              updateCreditGuarantee(c.creditGuaranteeId.get, h.amount)
-                            case None =>
-                              saveCreditGuarantee(insId, year, h.month, h.amount)
-                        }
-                    )
-                  )
-                  .map(_ => (insId, year))
-              case None =>
-                Task.raiseError(
-                  EntityNotFound(s"Not found institute [name: $insName]")
+          case ((instituteId, year), ess) ⇒
+            Task
+              .gatherUnordered(
+                ess.map(
+                  h ⇒
+                    findCreditGuaranteeByInstituteIdAndYearAndMonth(instituteId, year, h.month)
+                      .flatMap {
+                        case Some(c) ⇒
+                          updateCreditGuarantee(c.creditGuaranteeId.get, h.amount)
+                        case None ⇒
+                          saveCreditGuarantee(instituteId, year, h.month, h.amount)
+                    }
                 )
-            }
+              )
+              .map(_ ⇒ (instituteId, year))
         }
     )
 
@@ -91,16 +84,16 @@ trait HousingFinanceServiceImpl extends HousingFinanceService {
       summaries
         .groupBy(_.year)
         .map {
-          case (y, sumsGrouped) =>
+          case (y, sumsGrouped) ⇒
             YearlyTotalAmountResponse(
               y,
               sumsGrouped.map(_.sumAmount).sum,
               sumsGrouped
                 .flatMap(
-                  s =>
+                  s ⇒
                     institutes
                       .find(_.instituteId.contains(s.instituteId))
-                      .map(_.instituteName -> s.sumAmount)
+                      .map(_.instituteName → s.sumAmount)
                 )
                 .toMap
             )
@@ -111,15 +104,17 @@ trait HousingFinanceServiceImpl extends HousingFinanceService {
 
   override def saveHousingFinanceData(): Task[HousingFinanceDataResponse] =
     for {
-      rows <- readFile("")
-      entities <- Task.gatherUnordered(rows.map(transformEntity))
-      institutes <- findAllInstitute()
-      insYears <- upsertCreditGuarantee(
+      rows ← readFile("/data.csv")
+      institutes ← findAllInstitute()
+      entities ← Task.gatherUnordered(
+        rows.map(transformEntity(_, institutes.flatMap(_.instituteId)))
+      )
+      insYears ← upsertCreditGuarantee(
         entities.flatten,
         institutes
       )
-      summaries <- Task.gatherUnordered(insYears.map {
-        case (insId, year) => upsertSummary(insId, year)
+      summaries ← Task.gatherUnordered(insYears.map {
+        case (insId, year) ⇒ upsertSummary(insId, year)
       })
     } yield summariesToResponse(summaries, institutes)
 }

@@ -36,10 +36,10 @@ object Fixtures {
   )
 
   val fileRows = Seq(
-    HousingFinanceFileEntity(instituteName, 2018, 1, 1000L),
-    HousingFinanceFileEntity(instituteName, 2018, 2, 1000L),
-    HousingFinanceFileEntity(instituteName, 2018, 3, 1000L),
-    HousingFinanceFileEntity(instituteName, 2019, 1, 1000L),
+    HousingFinanceFileEntity(instituteId, 2018, 1, 1000L),
+    HousingFinanceFileEntity(instituteId, 2018, 2, 1000L),
+    HousingFinanceFileEntity(instituteId, 2018, 3, 1000L),
+    HousingFinanceFileEntity(instituteId, 2019, 1, 1000L),
   )
 
   val saveYearlyException = new Exception("Not Implemented")

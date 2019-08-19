@@ -63,7 +63,7 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
     Task
       .deferFuture(
         mysql.run(
-          TableQuery[SummaryTable].filter { s =>
+          TableQuery[SummaryTable].filter { s ⇒
             s.instituteId === instituteId &&
             s.year === year
           }.result
@@ -124,7 +124,7 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
       .deferFuture(
         mysql.run(
           TableQuery[CreditGuaranteeTable]
-            .filter { c =>
+            .filter { c ⇒
               c.instituteId === instituteId &&
               c.year === year &&
               c.month === month
@@ -140,7 +140,7 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
       mysql.run(
         TableQuery[SummaryTable]
           .filter(_.summaryId === summaryId)
-          .map(s => (s.sumAmount, s.avgAmount))
+          .map(s ⇒ (s.sumAmount, s.avgAmount))
           .update(sumAmount, avgAmount)
       )
     )
@@ -161,7 +161,7 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
   ): Task[Seq[CreditGuarantee]] =
     Task.deferFuture(
       mysql.run(
-        TableQuery[CreditGuaranteeTable].filter { c =>
+        TableQuery[CreditGuaranteeTable].filter { c ⇒
           c.instituteId === instituteId &&
           c.year === year
         }.result

@@ -5,6 +5,6 @@ import com.charlieworld.housing.utils.FileRead
 import monix.eval.Task
 
 trait MockFileRead extends FileRead {
-  def transformEntity(row: Row): Task[HousingFinanceFileEntity] = ???
+  def transformEntity(row: Row, instituteIds: Seq[Long]): Task[Seq[HousingFinanceFileEntity]] = ???
   def readFile(fileName: String): Task[Seq[Row]] = ???
 }

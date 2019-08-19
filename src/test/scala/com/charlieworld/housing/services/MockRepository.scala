@@ -26,12 +26,12 @@ trait MockRepository extends HousingFinanceRepository {
     year: Int,
     month: Int
   ): Task[Option[CreditGuarantee]] =
-    Task.pure(Fixtures.creditGuarantees.find { c =>
+    Task.pure(Fixtures.creditGuarantees.find { c ⇒
       c.year == year && c.instituteId == instituteId
     })
 
   override def findSummaryByInstituteId(instituteId: Long, year: Int): Task[Option[Summary]] =
-    Task.pure(Fixtures.summaries.find { s =>
+    Task.pure(Fixtures.summaries.find { s ⇒
       s.instituteId == instituteId && s.year == year
     })
 
@@ -41,7 +41,7 @@ trait MockRepository extends HousingFinanceRepository {
     month: Int,
     amount: Long
   ): Task[CreditGuarantee] =
-    Task.pure(Fixtures.creditGuarantees.find { c =>
+    Task.pure(Fixtures.creditGuarantees.find { c ⇒
       c.year == year && c.instituteId == instituteId
     }.get)
 
@@ -51,7 +51,7 @@ trait MockRepository extends HousingFinanceRepository {
     sumAmount: Long,
     avgAmount: Long
   ): Task[Summary] =
-    Task.pure(Fixtures.summaries.find { s =>
+    Task.pure(Fixtures.summaries.find { s ⇒
       s.instituteId == instituteId && s.year == year
     }.get)
 
