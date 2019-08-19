@@ -7,6 +7,6 @@ trait FileRead {
 
   type Row = Seq[String]
 
-  def transformEntity(row: Row): Task[HousingFinanceFileEntity]
+  def transformEntity(row: Row): Task[Seq[HousingFinanceFileEntity]]
   def readFile(fileName: String): Task[Seq[Row]]
 }

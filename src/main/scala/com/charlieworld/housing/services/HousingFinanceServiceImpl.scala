@@ -112,10 +112,10 @@ trait HousingFinanceServiceImpl extends HousingFinanceService {
   override def saveHousingFinanceData(): Task[HousingFinanceDataResponse] =
     for {
       rows <- readFile("")
-      entities <- Task.gather(rows.map(transformEntity))
+      entities <- Task.gatherUnordered(rows.map(transformEntity))
       institutes <- findAllInstitute()
       insYears <- upsertCreditGuarantee(
-        entities,
+        entities.flatten,
         institutes
       )
       summaries <- Task.gatherUnordered(insYears.map {
