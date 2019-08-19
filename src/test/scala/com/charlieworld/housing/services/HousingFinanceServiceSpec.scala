@@ -1,79 +1,78 @@
 package com.charlieworld.housing.services
 
 import com.charlieworld.housing.entities._
+import com.charlieworld.housing.exceptions.EntityNotFound
 import monix.execution.Scheduler.Implicits.global
 import org.scalatest.{FlatSpecLike, Matchers}
 
-import scala.util.{Failure, Success}
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
 class HousingFinanceServiceSpec extends Matchers with FlatSpecLike {
 
   object impl extends HousingFinanceServiceImpl with MockFileRead with MockRepository
 
+  implicit val timeout: Duration = 5 seconds
+
   "findMinAndMaxYearlyAvgAmount" should "return YearlyAvgAmountResponse with min and max values of amount" in {
-    impl.findMinAndMaxYearlyAvgAmount("주택금융공사").foreach { result ⇒
-      result shouldBe YearlyAvgAmountResponse(
-        "주택금융공사",
-        Fixtures.bankYearlyCreditGuaratee.map(y ⇒ YearlyAmountResponse(y.year, y.totalAmount))
-      )
-    }
+    Await.result(
+      impl.findMinAndMaxYearlyAvgAmount("주택금융공사").runAsync,
+      timeout
+    ) shouldBe YearlyAvgAmountResponse(
+      "주택금융공사",
+      Fixtures.summaries.map(y ⇒ YearlyAmountResponse(y.year, y.avgAmount))
+    )
   }
 
   "findTopOneYearlyAmount" should "return TopOneYearlyAmountResponse" in {
-    impl.findTopOneYearlyAmount().foreach { result ⇒
-      result shouldBe TopOneYearlyAmountResponse(2019, "주택금융공사")
-    }
+    Await.result(
+      impl.findTopOneYearlyAmount().runAsync,
+      timeout
+    ) shouldBe TopOneYearlyAmountResponse(2019, "주택금융공사")
   }
 
-  "instituteYearlyAmountsToResponseModel" should "return YearlyTotalAmountResponse which transformed from InstituteYearlyAmount" in {
-    impl.instituteYearlyAmountsToResponseModel(Fixtures.instituteYearlyAmounts) shouldBe Seq(
-      YearlyTotalAmountResponse(2018, 3100L, Map("A" → 1000L, "B" → 1200L, "C" → 900L)),
-      YearlyTotalAmountResponse(2019, 2500L, Map("A" → 800L, "B" → 1000L, "C" → 700L)),
-      YearlyTotalAmountResponse(2020, 300L, Map("A" → 200L, "B" → 100L)),
+  "summariesToResponse" should "return YearlyTotalAmountResponse which transformed from Summary" in {
+    impl.summariesToResponse(Fixtures.summaries, Fixtures.allInstitutes) shouldBe HousingFinanceDataResponse(
+      HousingFinanceService.HOUSING_FINANCE_DATA_NAME,
+      Seq(
+        YearlyTotalAmountResponse(2018, 3000L, Map("주택금융공사" → 3000L)),
+        YearlyTotalAmountResponse(2019, 1000L, Map("주택금융공사" → 1000L)),
+      )
     )
   }
 
   it should "return empty seq when instituteYearlyAmounts is empty seq" in {
-    impl.instituteYearlyAmountsToResponseModel(Seq.empty) shouldBe Seq.empty
+    impl.summariesToResponse(Seq.empty, Fixtures.allInstitutes) shouldBe HousingFinanceDataResponse(
+      HousingFinanceService.HOUSING_FINANCE_DATA_NAME,
+      Seq.empty
+    )
   }
 
-  "saveYearlyAndMonthlyCreditGuarantee" should "return seq of InstituteYearlyAmount" in {
-    impl
-      .saveYearlyAndMonthlyCreditGuarantee(
-        Fixtures.instituteId,
-        Fixtures.instituteName,
-        Fixtures.fileRows
+  "upsertCreditGuarantee" should "return upserted institute id and year" in {
+    Await.result(
+      impl.upsertCreditGuarantee(Fixtures.fileRows, Fixtures.allInstitutes).runAsync,
+      timeout
+    ) shouldBe Seq((1L, 2018), (1L, 2019))
+  }
+
+  it should "thrown not implemented error if institute is not exist" in {
+    a[EntityNotFound] shouldBe thrownBy {
+      Await.result(
+        impl
+          .upsertCreditGuarantee(
+            Seq(HousingFinanceFileEntity("기타", 2018, 3, 1000L)),
+            Fixtures.allInstitutes
+          )
+          .runAsync,
+        timeout
       )
-      .foreach { result ⇒
-        result shouldBe Seq(InstituteYearlyAmount(Fixtures.instituteName, 2018, 500L))
-      }
+    }
   }
 
-  it should "return empty seq if es is empty" in {
-    impl
-      .saveYearlyAndMonthlyCreditGuarantee(Fixtures.instituteId, Fixtures.instituteName, Seq.empty)
-      .foreach { result ⇒
-        result shouldBe Seq.empty
-      }
-  }
-
-  it should "throw saveMonthlyException" in {
-    impl
-      .saveYearlyAndMonthlyCreditGuarantee(2L, Fixtures.instituteName, Seq.empty)
-      .runAsync
-      .onComplete {
-        case Success(_) ⇒ ()
-        case Failure(exception) ⇒ exception shouldBe Fixtures.saveMonthlyException
-      }
-  }
-
-  it should "throw saveYearlyException" in {
-    impl
-      .saveYearlyAndMonthlyCreditGuarantee(3L, Fixtures.instituteName, Seq.empty)
-      .runAsync
-      .onComplete {
-        case Success(_) ⇒ ()
-        case Failure(exception) ⇒ exception shouldBe Fixtures.saveYearlyException
-      }
+  "upsertSummary" should "return summary if success to upsert summary" in {
+    Await.result(
+      impl.upsertSummary(Fixtures.instituteId, 2018).runAsync,
+      timeout
+    ) shouldBe Fixtures.summaries.head
   }
 }

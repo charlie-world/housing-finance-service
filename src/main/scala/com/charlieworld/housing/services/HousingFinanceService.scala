@@ -1,26 +1,33 @@
 package com.charlieworld.housing.services
 
+import com.charlieworld.housing.data.persistance.entities.{Institute, Summary}
 import com.charlieworld.housing.entities.{
+  HousingFinanceDataResponse,
   HousingFinanceFileEntity,
-  InstituteYearlyAmount,
   TopOneYearlyAmountResponse,
-  YearlyAvgAmountResponse,
-  YearlyTotalAmountResponse
+  YearlyAvgAmountResponse
 }
 import monix.eval.Task
 
 trait HousingFinanceService {
-  def saveHousingFinanceData(): Task[Seq[YearlyTotalAmountResponse]]
   def findTopOneYearlyAmount(): Task[TopOneYearlyAmountResponse]
   def findMinAndMaxYearlyAvgAmount(instituteName: String): Task[YearlyAvgAmountResponse]
 
-  def instituteYearlyAmountsToResponseModel(
-    instituteYearlyAmounts: Seq[InstituteYearlyAmount]
-  ): Seq[YearlyTotalAmountResponse]
+  def saveHousingFinanceData(): Task[HousingFinanceDataResponse]
 
-  def saveYearlyAndMonthlyCreditGuarantee(
-    instituteId: Long,
-    instituteName: String,
-    es: Seq[HousingFinanceFileEntity]
-  ): Task[Seq[InstituteYearlyAmount]]
+  def summariesToResponse(
+    summaries: Seq[Summary],
+    institutes: Seq[Institute]
+  ): HousingFinanceDataResponse
+
+  def upsertCreditGuarantee(
+    es: Seq[HousingFinanceFileEntity],
+    institutes: Seq[Institute]
+  ): Task[Seq[(Long, Int)]]
+
+  def upsertSummary(institueId: Long, year: Int): Task[Summary]
+}
+
+object HousingFinanceService {
+  final val HOUSING_FINANCE_DATA_NAME = "주택금융 공급현황"
 }

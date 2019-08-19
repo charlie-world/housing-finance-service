@@ -1,6 +1,6 @@
 package com.charlieworld.housing.services
 
-import com.charlieworld.housing.data.persistance.entities.{Institute, YearlyCreditGuarantee}
+import com.charlieworld.housing.data.persistance.entities.{CreditGuarantee, Institute, Summary}
 import com.charlieworld.housing.data.repositories.HousingFinanceRepository
 import monix.eval.Task
 
@@ -9,25 +9,53 @@ trait MockRepository extends HousingFinanceRepository {
 
   override def findMinMaxYearlyCreditGuaranteeAvgAmount(
     instituteName: String
-  ): Task[Seq[YearlyCreditGuarantee]] =
-    Task.pure(Fixtures.bankYearlyCreditGuaratee)
+  ): Task[Seq[Summary]] =
+    Task.pure(Fixtures.summaries)
 
   override def findTopOneYearlyCreditGuaranteeTotalAmount(): Task[Option[(Int, String)]] =
     Task.pure(Some(2019, "주택금융공사"))
 
-  override def saveMonthlyCreditGuarantee(
-    yearlyCreditGuaranteeId: Long,
-    data: Seq[(Int, Long)]
-  ): Task[Seq[Long]] =
-    if (yearlyCreditGuaranteeId == 1L) Task.pure(Seq(20L, 21L, 22L, 23L))
-    else Task.raiseError(Fixtures.saveMonthlyException)
-
-  override def saveYearlyCreditGuarantee(
-    year: Int,
+  override def findCreditGuaranteeByInstituteIdAndYear(
     instituteId: Long,
-    totalAmount: Long,
-    averageAmount: Long
-  ): Task[Long] =
-    if (instituteId == 1L) { Task.pure(1L) } else if (instituteId == 2L) { Task.pure(2L) } else
-      Task.raiseError(Fixtures.saveYearlyException)
+    year: Int
+  ): Task[Seq[CreditGuarantee]] =
+    Task.pure(Fixtures.creditGuarantees.filter(_.year == year))
+
+  override def findCreditGuaranteeByInstituteIdAndYearAndMonth(
+    instituteId: Long,
+    year: Int,
+    month: Int
+  ): Task[Option[CreditGuarantee]] =
+    Task.pure(Fixtures.creditGuarantees.find { c =>
+      c.year == year && c.instituteId == instituteId
+    })
+
+  override def findSummaryByInstituteId(instituteId: Long, year: Int): Task[Option[Summary]] =
+    Task.pure(Fixtures.summaries.find { s =>
+      s.instituteId == instituteId && s.year == year
+    })
+
+  override def saveCreditGuarantee(
+    instituteId: Long,
+    year: Int,
+    month: Int,
+    amount: Long
+  ): Task[CreditGuarantee] =
+    Task.pure(Fixtures.creditGuarantees.find { c =>
+      c.year == year && c.instituteId == instituteId
+    }.get)
+
+  override def saveSummaries(
+    instituteId: Long,
+    year: Int,
+    sumAmount: Long,
+    avgAmount: Long
+  ): Task[Summary] =
+    Task.pure(Fixtures.summaries.find { s =>
+      s.instituteId == instituteId && s.year == year
+    }.get)
+
+  override def updateCreditGuarantee(creditGuaranteeId: Long, amount: Long): Task[_] = Task.unit
+
+  override def updateSummary(summaryId: Long, sumAmount: Long, avgAmount: Long): Task[_] = Task.unit
 }
