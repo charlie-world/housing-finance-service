@@ -5,9 +5,11 @@ import akka.http.scaladsl.model.{StatusCodes, Uri}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.charlieworld.housing.AppSuite
 import com.charlieworld.housing.entities.{
+  HousingFinanceDataResponse,
   TopOneYearlyAmountResponse,
   YearlyAmountResponse,
-  YearlyAvgAmountResponse
+  YearlyAvgAmountResponse,
+  YearlyTotalAmountResponse
 }
 import monix.execution.Scheduler
 import org.scalatest.{FlatSpecLike, Matchers}
@@ -41,6 +43,18 @@ class HousingFinanceRouteSpec
         Seq(
           YearlyAmountResponse(2017, 60L),
           YearlyAmountResponse(2019, 120L),
+        )
+      )
+    }
+  }
+
+  "POST /housing-finance/init" should "return " in {
+    Post("/housing-finance/init") ~> housingFinanceRoutes ~> check {
+      status should equal(StatusCodes.OK)
+      responseAs[HousingFinanceDataResponse] shouldBe HousingFinanceDataResponse(
+        "test",
+        Seq(
+          YearlyTotalAmountResponse(2018, 100L, Map("국민은행" -> 100L))
         )
       )
     }

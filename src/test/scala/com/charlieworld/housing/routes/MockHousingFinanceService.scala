@@ -6,7 +6,8 @@ import com.charlieworld.housing.entities.{
   HousingFinanceFileEntity,
   TopOneYearlyAmountResponse,
   YearlyAmountResponse,
-  YearlyAvgAmountResponse
+  YearlyAvgAmountResponse,
+  YearlyTotalAmountResponse
 }
 import com.charlieworld.housing.services.HousingFinanceService
 import monix.eval.Task
@@ -26,7 +27,15 @@ trait MockHousingFinanceService extends HousingFinanceService {
   override def findTopOneYearlyAmount(): Task[TopOneYearlyAmountResponse] =
     Task.pure(TopOneYearlyAmountResponse(2019, "국민은행"))
 
-  override def saveHousingFinanceData(): Task[HousingFinanceDataResponse] = ???
+  override def saveHousingFinanceData(): Task[HousingFinanceDataResponse] =
+    Task.pure(
+      HousingFinanceDataResponse(
+        "test",
+        Seq(
+          YearlyTotalAmountResponse(2018, 100L, Map("국민은행" -> 100L))
+        )
+      )
+    )
 
   override def summariesToResponse(
     summaries: Seq[Summary],
