@@ -32,7 +32,7 @@ object Application
   override def routes: Route =
     pathEndOrSingleSlash {
       complete("housing finance service\n")
-    } ~ auth { _ =>
+    } ~ auth { _ ⇒
       pathPrefix("api") {
         pathPrefix("v1") {
           housingFinanceRoutes

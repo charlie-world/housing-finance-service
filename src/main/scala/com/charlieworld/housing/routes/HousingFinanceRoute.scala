@@ -5,7 +5,7 @@ import com.charlieworld.housing.AppSuite
 import com.charlieworld.housing.services.HousingFinanceService
 
 trait HousingFinanceRoute extends BaseRoute {
-  this: HousingFinanceService with AppSuite =>
+  this: HousingFinanceService with AppSuite ⇒
 
   def housingFinanceRoutes: Route =
     pathPrefix("housing-finance") {
@@ -15,7 +15,7 @@ trait HousingFinanceRoute extends BaseRoute {
         }
       } ~ pathPrefix("institute") {
         pathPrefix("min-and-max-annual-amount") {
-          (get & pathEnd & parameter("institute-name")) { instituteName =>
+          (get & pathEnd & parameter("institute-name")) { instituteName ⇒
             runComplete(findMinAndMaxYearlyAvgAmount(instituteName))
           }
         }

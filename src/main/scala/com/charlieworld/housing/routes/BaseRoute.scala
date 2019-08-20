@@ -18,9 +18,9 @@ trait BaseRoute extends Directives with SprayJsonSupport {
 
   def runComplete[_](task: Task[_])(implicit scheduler: Scheduler): Route =
     onComplete(task.runAsync) {
-      case Success(result: HousingFinanceDataResponse) => complete(result)
-      case Success(result: TopOneYearlyAmountResponse) => complete(result)
-      case Success(result: YearlyAvgAmountResponse)    => complete(result)
-      case Failure(ex)                                 => complete(StatusCodes.InternalServerError, ex.getMessage)
+      case Success(result: HousingFinanceDataResponse) ⇒ complete(result)
+      case Success(result: TopOneYearlyAmountResponse) ⇒ complete(result)
+      case Success(result: YearlyAvgAmountResponse) ⇒ complete(result)
+      case Failure(ex) ⇒ complete(StatusCodes.InternalServerError, ex.getMessage)
     }
 }
