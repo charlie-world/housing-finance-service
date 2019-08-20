@@ -4,7 +4,7 @@ import com.charlieworld.housing.data.persistance.entities.{CreditGuarantee, Inst
 import com.charlieworld.housing.data.repositories.HousingFinanceRepository
 import monix.eval.Task
 
-trait MockRepository extends HousingFinanceRepository {
+trait MockHousingFinanceRepository extends HousingFinanceRepository {
   override def findAllInstitute(): Task[Seq[Institute]] = Task.pure(Fixtures.allInstitutes)
 
   override def findMinMaxYearlyCreditGuaranteeAvgAmount(

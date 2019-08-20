@@ -5,8 +5,6 @@ import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import org.scalatest.{FlatSpecLike, Matchers}
 
 class AuthenticationSpec
@@ -23,11 +21,11 @@ class AuthenticationSpec
     }
 
   "auth function" should "return user_id if jwt token was verified" in {
-    val userId = "1"
-    val jwtToken = AuthenticationSpec.createToken(userId)
+    val userId = 1L
+    val jwtToken = createToken(userId)
     Get("/").withHeaders(Authorization(OAuth2BearerToken(jwtToken))) ~> routes ~> check {
-      status should equal(StatusCodes.OK)
-      entityAs[String] shouldBe userId
+      status shouldBe StatusCodes.OK
+      responseAs[String] shouldBe userId.toString
     }
   }
 
@@ -36,13 +34,5 @@ class AuthenticationSpec
     Get("/").withHeaders(Authorization(OAuth2BearerToken(invalidJwtToken))) ~> routes ~> check {
       status shouldBe StatusCodes.Unauthorized
     }
-  }
-}
-
-object AuthenticationSpec {
-
-  def createToken(userId: String): String = {
-    val algorithm = Algorithm.HMAC256("charlie-world")
-    JWT.create().withClaim("user_id", userId).sign(algorithm)
   }
 }

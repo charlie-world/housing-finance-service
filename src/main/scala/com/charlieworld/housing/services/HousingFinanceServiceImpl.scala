@@ -10,7 +10,7 @@ import com.charlieworld.housing.entities.{
   YearlyAvgAmountResponse,
   YearlyTotalAmountResponse
 }
-import com.charlieworld.housing.exceptions.EntityNotFound
+import com.charlieworld.housing.exceptions.EntityNotFoundException
 import com.charlieworld.housing.utils.FileRead
 import monix.eval.Task
 
@@ -30,7 +30,8 @@ trait HousingFinanceServiceImpl extends HousingFinanceService {
   override def findTopOneYearlyAmount(): Task[TopOneYearlyAmountResponse] =
     findTopOneYearlyCreditGuaranteeTotalAmount().map {
       case Some(v) ⇒ TopOneYearlyAmountResponse(v)
-      case None ⇒ throw EntityNotFound("Not found entities. func: [findTopOneYearlyAmount()]")
+      case None ⇒
+        throw EntityNotFoundException("Not found entities. func: [findTopOneYearlyAmount()]")
     }
 
   override def upsertSummary(institueId: Long, year: Int): Task[Summary] =

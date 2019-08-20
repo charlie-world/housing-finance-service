@@ -5,6 +5,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directives, Route}
 import com.charlieworld.housing.entities.{
   HousingFinanceDataResponse,
+  JWTResponse,
   TopOneYearlyAmountResponse,
   YearlyAvgAmountResponse
 }
@@ -21,6 +22,7 @@ trait BaseRoute extends Directives with SprayJsonSupport {
       case Success(result: HousingFinanceDataResponse) ⇒ complete(result)
       case Success(result: TopOneYearlyAmountResponse) ⇒ complete(result)
       case Success(result: YearlyAvgAmountResponse) ⇒ complete(result)
+      case Success(result: JWTResponse) ⇒ complete(result)
       case Failure(ex) ⇒ complete(StatusCodes.InternalServerError, ex.getMessage)
     }
 }

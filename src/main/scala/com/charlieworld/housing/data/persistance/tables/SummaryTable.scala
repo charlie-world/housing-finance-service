@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import com.charlieworld.housing.data.persistance.entities.Summary
 import slick.lifted.{ProvenShape, Tag}
-import slick.jdbc.H2Profile.api._
+import slick.jdbc.MySQLProfile.api._
 
 class SummaryTable(tag: Tag) extends Table[Summary](tag, "summary") {
   def summaryId: Rep[Long] = column[Long]("summary_id", O.PrimaryKey, O.AutoInc)

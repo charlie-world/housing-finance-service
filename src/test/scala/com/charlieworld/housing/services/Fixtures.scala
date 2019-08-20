@@ -30,4 +30,8 @@ object Fixtures {
     HousingFinanceFileEntity(instituteId, 2018, 3, 1000L),
     HousingFinanceFileEntity(instituteId, 2019, 1, 1000L),
   )
+
+  val password = "ABCD"
+  val email1 = "email1@email.com"
+  val email2 = "email2@email.com"
 }

@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import com.charlieworld.housing.data.persistance.entities.Institute
 import slick.lifted.{ProvenShape, Tag}
-import slick.jdbc.H2Profile.api._
+import slick.jdbc.MySQLProfile.api._
 
 class InstituteTable(tag: Tag) extends Table[Institute](tag, "institute") {
   def instituteId: Rep[Long] = column[Long]("institute_id", O.PrimaryKey, O.AutoInc)
