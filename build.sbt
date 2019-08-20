@@ -27,5 +27,5 @@ lazy val root = (project in file(".")).settings(
   ).flatten,
   scalafmtOnCompile := true,
   autoCompilerPlugins := true,
-  assemblyOutputPath in assembly := new File("/app/target/app.jar")
+  assemblyJarName in assembly := "app.jar"
 )
