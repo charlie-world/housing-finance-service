@@ -1,5 +1,6 @@
 package com.charlieworld.housing.routes
 
+
 import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
@@ -7,9 +8,11 @@ import com.charlieworld.housing.entities.{JWTResponse, UserRequest}
 import com.charlieworld.housing.routes.mock.MockUserService
 import com.charlieworld.housing.serialization.JsonProtocol._
 import com.charlieworld.housing.services.Fixtures
-import com.charlieworld.housing.{AppSuite, Authentication}
+import com.charlieworld.housing.{AppSuite, Authentication, Logging}
 import monix.execution.Scheduler
 import org.scalatest.{FlatSpecLike, Matchers}
+import org.slf4j.{Logger, LoggerFactory}
+import ch.qos.logback.classic.{Logger => LogbackLogger}
 import spray.json._
 
 class UserRouteSpec
@@ -17,9 +20,12 @@ class UserRouteSpec
   with FlatSpecLike
   with ScalatestRouteTest
   with UserRoute
+  with Logging
   with Authentication
   with MockUserService
   with AppSuite {
+
+  override val logger: Logger = LoggerFactory.getLogger(getClass).asInstanceOf[LogbackLogger]
 
   override implicit protected val s: Scheduler = monix.execution.Scheduler.global
 

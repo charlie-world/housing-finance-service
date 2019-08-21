@@ -41,20 +41,20 @@ trait MockHousingFinanceRepository extends HousingFinanceRepository {
     year: Int,
     month: Int,
     amount: Long
-  ): Task[CreditGuarantee] =
+  ): Task[Long] =
     Task.pure(Fixtures.creditGuarantees.find { c ⇒
       c.year == year && c.instituteId == instituteId
-    }.get)
+    }.get.creditGuaranteeId.get)
 
   override def saveSummaries(
     instituteId: Long,
     year: Int,
     sumAmount: Long,
     avgAmount: Long
-  ): Task[Summary] =
+  ): Task[Long] =
     Task.pure(Fixtures.summaries.find { s ⇒
       s.instituteId == instituteId && s.year == year
-    }.get)
+    }.get.summaryId.get)
 
   override def updateCreditGuarantee(creditGuaranteeId: Long, amount: Long): Task[_] = Task.unit
 

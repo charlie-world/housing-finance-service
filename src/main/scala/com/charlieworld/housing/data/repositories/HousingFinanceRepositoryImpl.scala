@@ -76,11 +76,11 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
     year: Int,
     month: Int,
     amount: Long
-  ): Task[CreditGuarantee] =
+  ): Task[Long] =
     Task.deferFuture(
       mysql.run(
         TableQuery[CreditGuaranteeTable]
-          .returning(TableQuery[CreditGuaranteeTable])
+          .returning(TableQuery[CreditGuaranteeTable].map(_.creditGuaranteeId))
           .forceInsert(
             CreditGuarantee(
               None,
@@ -98,11 +98,11 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
     year: Int,
     sumAmount: Long,
     avgAmount: Long
-  ): Task[Summary] =
+  ): Task[Long] =
     Task.deferFuture(
       mysql.run(
         TableQuery[SummaryTable]
-          .returning(TableQuery[SummaryTable])
+          .returning(TableQuery[SummaryTable].map(_.summaryId))
           .forceInsert(
             Summary(
               None,

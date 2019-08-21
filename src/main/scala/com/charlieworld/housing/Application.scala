@@ -9,6 +9,8 @@ import com.charlieworld.housing.services.{HousingFinanceServiceImpl, UserService
 import com.charlieworld.housing.utils.{CryptoImpl, FileReadImpl}
 import monix.execution.Scheduler
 import slick.jdbc.MySQLProfile.api.Database
+import ch.qos.logback.classic.{Logger => LogbackLogger}
+import org.slf4j.{Logger, LoggerFactory}
 
 import scala.concurrent.ExecutionContext
 
@@ -25,7 +27,10 @@ object Application
   with FileReadImpl
   with HousingFinanceRepositoryImpl
   with MysqlDatabaseConfiguration
+  with Logging
   with AppSuite {
+
+  override val logger: Logger = LoggerFactory.getLogger(getClass).asInstanceOf[LogbackLogger]
 
   implicit val actor: ActorSystem = ActorSystem("housing-finance-service")
   implicit val ec: ExecutionContext = actor.dispatcher
@@ -37,9 +42,9 @@ object Application
       complete("housing finance service\n")
     } ~ pathPrefix("api") {
       pathPrefix("v1") {
-        auth { _ =>
+        userRoutes ~ auth { _ =>
           housingFinanceRoutes
-        } ~ userRoutes
+        }
       }
     }
 

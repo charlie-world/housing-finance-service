@@ -4,16 +4,16 @@ import com.charlieworld.housing.entities.HousingFinanceFileEntity
 import com.charlieworld.housing.exceptions.InvalidRowException
 import monix.eval.Task
 
-import scala.io.Source
+import scala.io.{Codec, Source}
 import scala.util.{Success, Try}
 
 trait FileReadImpl extends FileRead {
 
   override def readFile(fileName: String): Task[Seq[Row]] = {
     val filePath = getClass.getResource(fileName).getPath
-    val lines = Source.fromFile(filePath)
+    val lines = Source.fromFile(filePath)(Codec("euckr"))
     (for {
-      line ← Task.eval(lines.getLines())
+      line ← Task.pure(lines.getLines())
     } yield line.map(_.split(",").toSeq)).map(_.toSeq.drop(1))
   }
 
