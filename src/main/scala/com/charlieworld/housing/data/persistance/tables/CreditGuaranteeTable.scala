@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import com.charlieworld.housing.data.persistance.entities.CreditGuarantee
 import slick.lifted.{ProvenShape, Tag}
-import slick.jdbc.H2Profile.api._
+import slick.jdbc.MySQLProfile.api._
 
 class CreditGuaranteeTable(tag: Tag) extends Table[CreditGuarantee](tag, "credit_guarantee") {
 

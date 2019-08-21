@@ -9,9 +9,9 @@ import scala.concurrent.duration._
 
 class HousingFinanceServiceSpec extends Matchers with FlatSpecLike {
 
-  object impl extends HousingFinanceServiceImpl with MockFileRead with MockRepository
+  object impl extends HousingFinanceServiceImpl with MockFileRead with MockHousingFinanceRepository
 
-  implicit val timeout: Duration = 5 seconds
+  final val timeout: Duration = 5 seconds
 
   "findMinAndMaxYearlyAvgAmount" should "return YearlyAvgAmountResponse with min and max values of amount" in {
     Await.result(

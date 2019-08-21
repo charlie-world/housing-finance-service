@@ -23,6 +23,11 @@ trait Authentication {
       case Authorization(OAuth2BearerToken(token)) ⇒ token
     }
 
+  def createToken(userId: Long): String = {
+    val algorithm = Algorithm.HMAC256(Authentication.SECRET)
+    JWT.create().withClaim("user_id", userId.toString).sign(algorithm)
+  }
+
   def auth: Directive1[Long] =
     optionalHeaderValueByType(classOf[Authorization]).map(extractBearerToken).flatMap {
       case Some(token) ⇒

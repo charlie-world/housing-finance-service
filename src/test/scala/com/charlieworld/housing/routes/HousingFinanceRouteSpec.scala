@@ -27,7 +27,7 @@ class HousingFinanceRouteSpec
 
   "GET /housing-finance/most-supported-institute" should "return most supported institute with year" in {
     Get("/housing-finance/most-supported-institute") ~> housingFinanceRoutes ~> check {
-      status should equal(StatusCodes.OK)
+      status shouldBe StatusCodes.OK
       responseAs[TopOneYearlyAmountResponse] shouldBe TopOneYearlyAmountResponse(2019, "국민은행")
     }
   }
@@ -37,7 +37,7 @@ class HousingFinanceRouteSpec
       Query(Map("institute-name" -> "국민은행"))
     )
     Get(uri) ~> housingFinanceRoutes ~> check {
-      status should equal(StatusCodes.OK)
+      status shouldBe StatusCodes.OK
       responseAs[YearlyAvgAmountResponse] shouldBe YearlyAvgAmountResponse(
         "국민은행",
         Seq(
@@ -50,7 +50,7 @@ class HousingFinanceRouteSpec
 
   "POST /housing-finance/init" should "return " in {
     Post("/housing-finance/init") ~> housingFinanceRoutes ~> check {
-      status should equal(StatusCodes.OK)
+      status shouldBe StatusCodes.OK
       responseAs[HousingFinanceDataResponse] shouldBe HousingFinanceDataResponse(
         "test",
         Seq(

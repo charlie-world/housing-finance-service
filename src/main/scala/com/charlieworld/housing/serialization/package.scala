@@ -43,5 +43,7 @@ package object serialization {
     implicit val YearlyAvgAmountResponseJsonFormat = jsonFormat2(YearlyAvgAmountResponse)
     implicit val YearlyTotalAmountResponseJsonFormat = jsonFormat3(YearlyTotalAmountResponse)
     implicit val HousingFinanceDataResponseJsonFormat = jsonFormat2(HousingFinanceDataResponse)
+    implicit val JWTResponseJsonFormat = jsonFormat1(JWTResponse)
+    implicit val UserRequestJsonFormat = jsonFormat2(UserRequest)
   }
 }

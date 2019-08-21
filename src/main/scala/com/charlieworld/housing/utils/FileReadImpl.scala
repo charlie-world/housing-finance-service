@@ -1,7 +1,7 @@
 package com.charlieworld.housing.utils
 
 import com.charlieworld.housing.entities.HousingFinanceFileEntity
-import com.charlieworld.housing.exceptions.InvalidRow
+import com.charlieworld.housing.exceptions.InvalidRowException
 import monix.eval.Task
 
 import scala.io.Source
@@ -38,7 +38,7 @@ trait FileReadImpl extends FileRead {
                 )
             }
           )
-        case _ ⇒ Task.raiseError(InvalidRow("Invalid row in file"))
+        case _ ⇒ Task.raiseError(InvalidRowException("Invalid row in file"))
       }
     } yield result
 }
