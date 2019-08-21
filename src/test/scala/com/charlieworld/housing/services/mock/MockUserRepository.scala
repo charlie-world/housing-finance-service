@@ -1,7 +1,8 @@
-package com.charlieworld.housing.services
+package com.charlieworld.housing.services.mock
 
 import com.charlieworld.housing.data.repositories.UserRepository
 import com.charlieworld.housing.exceptions.{LoginFailedException, UserConflictException}
+import com.charlieworld.housing.services.Fixtures
 import monix.eval.Task
 
 trait MockUserRepository extends UserRepository {

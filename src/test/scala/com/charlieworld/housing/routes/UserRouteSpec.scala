@@ -4,6 +4,7 @@ import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.charlieworld.housing.entities.{JWTResponse, UserRequest}
+import com.charlieworld.housing.routes.mock.MockUserService
 import com.charlieworld.housing.serialization.JsonProtocol._
 import com.charlieworld.housing.services.Fixtures
 import com.charlieworld.housing.{AppSuite, Authentication}

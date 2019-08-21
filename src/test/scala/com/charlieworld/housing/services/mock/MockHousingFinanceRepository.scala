@@ -1,7 +1,8 @@
-package com.charlieworld.housing.services
+package com.charlieworld.housing.services.mock
 
 import com.charlieworld.housing.data.persistance.entities.{CreditGuarantee, Institute, Summary}
 import com.charlieworld.housing.data.repositories.HousingFinanceRepository
+import com.charlieworld.housing.services.Fixtures
 import monix.eval.Task
 
 trait MockHousingFinanceRepository extends HousingFinanceRepository {

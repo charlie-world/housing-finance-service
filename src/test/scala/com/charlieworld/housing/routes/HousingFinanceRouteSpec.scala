@@ -11,6 +11,7 @@ import com.charlieworld.housing.entities.{
   YearlyAvgAmountResponse,
   YearlyTotalAmountResponse
 }
+import com.charlieworld.housing.routes.mock.MockHousingFinanceService
 import monix.execution.Scheduler
 import org.scalatest.{FlatSpecLike, Matchers}
 import com.charlieworld.housing.serialization.JsonProtocol._

@@ -1,14 +1,7 @@
-package com.charlieworld.housing.routes
+package com.charlieworld.housing.routes.mock
 
 import com.charlieworld.housing.data.persistance.entities.{Institute, Summary}
-import com.charlieworld.housing.entities.{
-  HousingFinanceDataResponse,
-  HousingFinanceFileEntity,
-  TopOneYearlyAmountResponse,
-  YearlyAmountResponse,
-  YearlyAvgAmountResponse,
-  YearlyTotalAmountResponse
-}
+import com.charlieworld.housing.entities._
 import com.charlieworld.housing.services.HousingFinanceService
 import monix.eval.Task
 

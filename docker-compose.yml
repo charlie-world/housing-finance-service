@@ -1,0 +1,23 @@
+version: '3.1'
+
+services:
+  db:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: housing
+      MYSQL_USER: charlie
+      MYSQL_PASSWORD: charlie
+  housing:
+    build: .
+    container_name: housing
+    environment:
+      MYSQL_DB_URL: "jdbc:mysql://db:3306/housing?autoReconnect=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8"
+      MYSQL_DB_USER: charlie
+      MYSQL_DB_PASSWORD: charlie
+    depends_on:
+      - db

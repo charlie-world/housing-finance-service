@@ -1,4 +1,4 @@
-package com.charlieworld.housing.routes
+package com.charlieworld.housing.routes.mock
 
 import com.charlieworld.housing.entities.JWTResponse
 import com.charlieworld.housing.exceptions.{LoginFailedException, UserConflictException}

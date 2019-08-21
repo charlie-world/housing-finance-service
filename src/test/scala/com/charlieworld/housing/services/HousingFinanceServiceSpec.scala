@@ -1,6 +1,7 @@
 package com.charlieworld.housing.services
 
 import com.charlieworld.housing.entities._
+import com.charlieworld.housing.services.mock.{MockFileRead, MockHousingFinanceRepository}
 import monix.execution.Scheduler.Implicits.global
 import org.scalatest.{FlatSpecLike, Matchers}
 

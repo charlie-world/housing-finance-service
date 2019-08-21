@@ -2,6 +2,7 @@ package com.charlieworld.housing.services
 
 import com.charlieworld.housing.entities.JWTResponse
 import com.charlieworld.housing.exceptions.{LoginFailedException, UserConflictException}
+import com.charlieworld.housing.services.mock.{MockAuthentication, MockUserRepository}
 import org.scalatest.{FlatSpecLike, Matchers}
 import monix.execution.Scheduler.Implicits.global
 
