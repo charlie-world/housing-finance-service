@@ -13,12 +13,13 @@ trait UserRoute extends BaseRoute {
     pathPrefix("users") {
       (post & pathEnd & entity(as[UserRequest])) { req ⇒
         runComplete(signUp(req.email, req.password))
-      } ~ auth { userId ⇒
-        (path("login") & post & entity(as[UserRequest])) { req ⇒
-          runComplete(signIn(req.email, req.password))
-        } ~ (path("refresh") & get) {
-          runComplete(refresh(userId))
+      } ~
+        auth { userId ⇒
+          (path("login") & post & entity(as[UserRequest])) { req ⇒
+            runComplete(signIn(req.email, req.password))
+          } ~ (path("refresh") & get) {
+            runComplete(refresh(userId))
+          }
         }
-      }
     }
 }

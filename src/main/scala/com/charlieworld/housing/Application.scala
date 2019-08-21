@@ -3,12 +3,11 @@ package com.charlieworld.housing
 import akka.actor.ActorSystem
 import akka.http.scaladsl.server.{HttpApp, Route}
 import com.charlieworld.housing.data.MysqlDatabaseConfiguration
-import com.charlieworld.housing.data.repositories.HousingFinanceRepositoryImpl
-import com.charlieworld.housing.routes.HousingFinanceRoute
-import com.charlieworld.housing.services.HousingFinanceServiceImpl
-import com.charlieworld.housing.utils.FileReadImpl
+import com.charlieworld.housing.data.repositories.{HousingFinanceRepositoryImpl, UserRepositoryImpl}
+import com.charlieworld.housing.routes.{HousingFinanceRoute, UserRoute}
+import com.charlieworld.housing.services.{HousingFinanceServiceImpl, UserServiceImpl}
+import com.charlieworld.housing.utils.{CryptoImpl, FileReadImpl}
 import monix.execution.Scheduler
-
 import slick.jdbc.MySQLProfile.api.Database
 
 import scala.concurrent.ExecutionContext
@@ -18,6 +17,10 @@ object Application
   with App
   with Authentication
   with HousingFinanceRoute
+  with UserRoute
+  with UserServiceImpl
+  with CryptoImpl
+  with UserRepositoryImpl
   with HousingFinanceServiceImpl
   with FileReadImpl
   with HousingFinanceRepositoryImpl
@@ -32,11 +35,11 @@ object Application
   override def routes: Route =
     pathEndOrSingleSlash {
       complete("housing finance service\n")
-    } ~ auth { _ ⇒
-      pathPrefix("api") {
-        pathPrefix("v1") {
+    } ~ pathPrefix("api") {
+      pathPrefix("v1") {
+        auth { _ =>
           housingFinanceRoutes
-        }
+        } ~ userRoutes
       }
     }
 

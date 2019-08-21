@@ -34,4 +34,6 @@ object Fixtures {
   val password = "ABCD"
   val email1 = "email1@email.com"
   val email2 = "email2@email.com"
+  val jwt = "JWT_TOKEN_SAMPLE"
+  val newJwt = "NEW_JWT_TOKEN_SAMPLE"
 }
