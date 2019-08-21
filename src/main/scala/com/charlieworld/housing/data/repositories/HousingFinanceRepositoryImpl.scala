@@ -46,6 +46,7 @@ trait HousingFinanceRepositoryImpl extends HousingFinanceRepository {
             .result
         )
       )
+      .map(_.toList)
       .map {
         case Nil ⇒ Seq.empty
         case head :: tail ⇒ Seq(Some(head), tail.lastOption).flatten

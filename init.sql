@@ -12,7 +12,7 @@ CREATE TABLE institute (
   created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (institute_id),
-  KEY INSTITUTE_NAME_IDX (institute_name) USING BTREE
+  KEY INSTITUTE_NAME_IDX (institute_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE credit_guarantee (
@@ -24,7 +24,7 @@ CREATE TABLE credit_guarantee (
   created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (credit_guarantee_id),
-  KEY INSTITUTE_ID_YEAR_MONTH_IDX (institute_id,year,month) USING BTREE
+  KEY INSTITUTE_ID_YEAR_MONTH_IDX (institute_id,year,month)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE summary (
@@ -36,7 +36,7 @@ CREATE TABLE summary (
   created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (summary_id),
-  KEY INSTITUTE_ID_YEAR_IDX (institute_id,year) USING BTREE
+  KEY INSTITUTE_ID_YEAR_IDX (institute_id,year)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE user (
@@ -47,7 +47,7 @@ CREATE TABLE user (
   created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id),
-  KEY EMAIL_IDX (email) USING BTREE
+  KEY EMAIL_IDX (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO institute (institute_name, institute_code)
