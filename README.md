@@ -14,7 +14,17 @@
 ## 실행 방법
 
 ```sh
-(docker 가 설치 되어 있다는 가정 안에서)
+(docker 가 설치 되어 있다는 가정 안에서, jar 폴더 내의 미리 만들어진 jar 파일로 docker build)
+docker-compose up
+```
+
+## 완전 빌드 를 하고 싶다면
+
+```sh
+(sbt 1.2.6 버전 설치)
+sbt assembly
+cp ./target/scala-2.12/app.jar ./jar/app.jar
+
 docker-compose up
 ```
 
