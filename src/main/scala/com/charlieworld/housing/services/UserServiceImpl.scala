@@ -1,12 +1,11 @@
 package com.charlieworld.housing.services
 
-import com.charlieworld.housing.Authentication
 import com.charlieworld.housing.data.repositories.UserRepository
 import com.charlieworld.housing.entities.JWTResponse
 import monix.eval.Task
 
 trait UserServiceImpl extends UserService {
-  this: Authentication with UserRepository ⇒
+  this: AuthenticationService with UserRepository ⇒
 
   override def signIn(email: String, password: String): Task[JWTResponse] =
     for {
@@ -17,7 +16,4 @@ trait UserServiceImpl extends UserService {
     for {
       userId ← join(email, password)
     } yield JWTResponse(createToken(userId))
-
-  override def refresh(userId: Long): Task[JWTResponse] =
-    Task.eval(JWTResponse(createToken(userId)))
 }

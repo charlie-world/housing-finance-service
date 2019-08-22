@@ -1,18 +1,18 @@
 package com.charlieworld.housing.routes
 
-
 import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
+import ch.qos.logback.classic.{Logger => LogbackLogger}
 import com.charlieworld.housing.entities.{JWTResponse, UserRequest}
 import com.charlieworld.housing.routes.mock.MockUserService
 import com.charlieworld.housing.serialization.JsonProtocol._
 import com.charlieworld.housing.services.Fixtures
-import com.charlieworld.housing.{AppSuite, Authentication, Logging}
+import com.charlieworld.housing.services.mock.MockAuthenticationService
+import com.charlieworld.housing.{AppSuite, Logging}
 import monix.execution.Scheduler
 import org.scalatest.{FlatSpecLike, Matchers}
 import org.slf4j.{Logger, LoggerFactory}
-import ch.qos.logback.classic.{Logger => LogbackLogger}
 import spray.json._
 
 class UserRouteSpec
@@ -21,11 +21,11 @@ class UserRouteSpec
   with ScalatestRouteTest
   with UserRoute
   with Logging
-  with Authentication
+  with MockAuthenticationService
   with MockUserService
   with AppSuite {
 
-  override val logger: Logger = LoggerFactory.getLogger(getClass).asInstanceOf[LogbackLogger]
+  override val logger: Logger = LoggerFactory.getLogger(getClass)
 
   override implicit protected val s: Scheduler = monix.execution.Scheduler.global
 
@@ -84,7 +84,7 @@ class UserRouteSpec
   }
 
   it should "return 401 unauthorized if it failed to jwt auth" in {
-    val header = Authorization(OAuth2BearerToken(Fixtures.jwt))
+    val header = Authorization(OAuth2BearerToken("INVALID"))
 
     Post("/users/login").withHeaders(header) ~> userRoutes ~> check {
       status shouldBe StatusCodes.Unauthorized
@@ -99,14 +99,6 @@ class UserRouteSpec
     Get("/users/refresh").withHeaders(header) ~> userRoutes ~> check {
       status shouldBe StatusCodes.OK
       responseAs[JWTResponse] shouldBe JWTResponse(Fixtures.newJwt)
-    }
-  }
-
-  it should "return 401 unauthorized if it failed to jwt auth" in {
-    val header = Authorization(OAuth2BearerToken(Fixtures.jwt))
-
-    Post("/users/refresh").withHeaders(header) ~> userRoutes ~> check {
-      status shouldBe StatusCodes.Unauthorized
     }
   }
 }

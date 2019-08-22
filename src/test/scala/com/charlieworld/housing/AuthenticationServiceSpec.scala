@@ -5,13 +5,14 @@ import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
+import com.charlieworld.housing.services.AuthenticationServiceImpl
 import org.scalatest.{FlatSpecLike, Matchers}
 
-class AuthenticationSpec
+class AuthenticationServiceSpec
   extends Matchers
   with FlatSpecLike
   with ScalatestRouteTest
-  with Authentication {
+  with AuthenticationServiceImpl {
 
   val routes: Route =
     pathEndOrSingleSlash {

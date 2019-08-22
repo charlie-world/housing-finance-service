@@ -10,9 +10,6 @@ trait MockUserService extends UserService {
     if (email == Fixtures.email1) Task.pure(JWTResponse(Fixtures.jwt))
     else Task.raiseError(UserConflictException(s"Already exist email $email"))
 
-  override def refresh(userId: Long): Task[JWTResponse] =
-    Task.pure(JWTResponse(Fixtures.newJwt))
-
   override def signIn(email: String, password: String): Task[JWTResponse] =
     if (email == Fixtures.email1) Task.pure(JWTResponse(Fixtures.jwt))
     else Task.raiseError(LoginFailedException("Login failed"))

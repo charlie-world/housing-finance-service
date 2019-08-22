@@ -2,16 +2,16 @@ package com.charlieworld.housing.services
 
 import com.charlieworld.housing.entities.JWTResponse
 import com.charlieworld.housing.exceptions.{LoginFailedException, UserConflictException}
-import com.charlieworld.housing.services.mock.{MockAuthentication, MockUserRepository}
-import org.scalatest.{FlatSpecLike, Matchers}
+import com.charlieworld.housing.services.mock.{MockAuthenticationService, MockUserRepository}
 import monix.execution.Scheduler.Implicits.global
+import org.scalatest.{FlatSpecLike, Matchers}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
 class UserServiceSpec extends Matchers with FlatSpecLike {
 
-  object impl extends UserServiceImpl with MockAuthentication with MockUserRepository
+  object impl extends UserServiceImpl with MockAuthenticationService with MockUserRepository
 
   final val timeout: Duration = 5 seconds
 
@@ -19,7 +19,7 @@ class UserServiceSpec extends Matchers with FlatSpecLike {
     Await.result(
       impl.signIn(Fixtures.email1, Fixtures.password).runAsync,
       timeout
-    ) shouldBe JWTResponse("1-1")
+    ) shouldBe JWTResponse(Fixtures.jwt)
   }
 
   it should "throw login failed exception" in {
@@ -35,7 +35,7 @@ class UserServiceSpec extends Matchers with FlatSpecLike {
     Await.result(
       impl.signUp(Fixtures.email1, Fixtures.password).runAsync,
       timeout
-    ) shouldBe JWTResponse("1-1")
+    ) shouldBe JWTResponse(Fixtures.jwt)
   }
 
   it should "throw user conflict exception" in {
@@ -45,12 +45,5 @@ class UserServiceSpec extends Matchers with FlatSpecLike {
         timeout
       )
     }
-  }
-
-  "refresh" should "return a new jwt token" in {
-    Await.result(
-      impl.refresh(2L).runAsync,
-      timeout
-    ) shouldBe JWTResponse("2-2")
   }
 }

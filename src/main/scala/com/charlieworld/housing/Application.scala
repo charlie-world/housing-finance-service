@@ -2,22 +2,26 @@ package com.charlieworld.housing
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.server.{HttpApp, Route}
+import ch.qos.logback.classic.{Logger => LogbackLogger}
 import com.charlieworld.housing.data.MysqlDatabaseConfiguration
 import com.charlieworld.housing.data.repositories.{HousingFinanceRepositoryImpl, UserRepositoryImpl}
 import com.charlieworld.housing.routes.{HousingFinanceRoute, UserRoute}
-import com.charlieworld.housing.services.{HousingFinanceServiceImpl, UserServiceImpl}
+import com.charlieworld.housing.services.{
+  AuthenticationServiceImpl,
+  HousingFinanceServiceImpl,
+  UserServiceImpl
+}
 import com.charlieworld.housing.utils.{CryptoImpl, FileReadImpl}
 import monix.execution.Scheduler
-import slick.jdbc.MySQLProfile.api.Database
-import ch.qos.logback.classic.{Logger => LogbackLogger}
 import org.slf4j.{Logger, LoggerFactory}
+import slick.jdbc.MySQLProfile.api.Database
 
 import scala.concurrent.ExecutionContext
 
 object Application
   extends HttpApp
   with App
-  with Authentication
+  with AuthenticationServiceImpl
   with HousingFinanceRoute
   with UserRoute
   with UserServiceImpl

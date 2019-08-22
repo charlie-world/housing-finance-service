@@ -24,7 +24,8 @@ CREATE TABLE credit_guarantee (
   created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (credit_guarantee_id),
-  KEY INSTITUTE_ID_YEAR_MONTH_IDX (institute_id,year,month)
+  KEY INSTITUTE_ID_YEAR_MONTH_IDX (institute_id,year,month),
+  KEY INSTITUTE_ID_YEAR_IDX (institute_id,year)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE summary (

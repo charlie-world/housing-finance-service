@@ -18,14 +18,14 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: housing
-#  housing:
-#    build: .
-#    container_name: housing
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      MYSQL_DB_URL: "jdbc:mysql://db:3306/housing?autoReconnect=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8"
-#      MYSQL_DB_USER: charlie
-#      MYSQL_DB_PASSWORD: charlie
-#    depends_on:
-#      - db
+  housing:
+    build: .
+    container_name: housing
+    ports:
+      - "8080:8080"
+    environment:
+      MYSQL_DB_URL: "jdbc:mysql://db:3306/housing?autoReconnect=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8"
+      MYSQL_DB_USER: root
+      MYSQL_DB_PASSWORD: root
+    depends_on:
+      - db

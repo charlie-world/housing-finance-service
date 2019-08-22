@@ -4,18 +4,26 @@ import akka.http.scaladsl.model.Uri.Query
 import akka.http.scaladsl.model.{StatusCodes, Uri}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.charlieworld.housing.{AppSuite, Logging}
-import com.charlieworld.housing.entities.{HousingFinanceDataResponse, TopOneYearlyAmountResponse, YearlyAmountResponse, YearlyAvgAmountResponse, YearlyTotalAmountResponse}
+import com.charlieworld.housing.entities.{
+  HousingFinanceDataResponse,
+  TopOneYearlyAmountResponse,
+  YearlyAmountResponse,
+  YearlyAvgAmountResponse,
+  YearlyTotalAmountResponse
+}
 import com.charlieworld.housing.routes.mock.MockHousingFinanceService
 import monix.execution.Scheduler
 import org.scalatest.{FlatSpecLike, Matchers}
 import com.charlieworld.housing.serialization.JsonProtocol._
 import org.slf4j.{Logger, LoggerFactory}
 import ch.qos.logback.classic.{Logger => LogbackLogger}
+import com.charlieworld.housing.services.mock.MockAuthenticationService
 
 class HousingFinanceRouteSpec
   extends Matchers
   with FlatSpecLike
   with ScalatestRouteTest
+  with MockAuthenticationService
   with HousingFinanceRoute
   with Logging
   with AppSuite
