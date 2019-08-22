@@ -5,6 +5,7 @@ object Dependencies {
   private lazy val monixVersion = "2.3.0"
   private lazy val akkaHttpVersion = "10.0.11"
   private lazy val slf4jVersion = "1.7.25"
+  private lazy val logbackVersion = "1.2.3"
   private lazy val jwtAuthVersion = "3.8.2"
   private lazy val slickVersion = "3.3.0"
   private lazy val mysqlConnectorVersion = "8.0.17"
@@ -30,7 +31,9 @@ object Dependencies {
   
   lazy val loggingDependencies: Seq[ModuleID] = Seq(
     "org.slf4j" % "slf4j-api"
-  ).map(_ % slf4jVersion)
+  ).map(_ % slf4jVersion) ++ Seq(
+    "ch.qos.logback" % "logback-classic"
+  ).map(_ % logbackVersion)
 
   lazy val authenticationDependencies: Seq[ModuleID] = Seq(
     "com.auth0" % "java-jwt"

@@ -4,7 +4,6 @@ import com.charlieworld.housing.data.persistance.entities.{CreditGuarantee, Inst
 import com.charlieworld.housing.entities.HousingFinanceFileEntity
 
 object Fixtures {
-
   val instituteId: Long = 1L
   val instituteName: String = "주택금융공사"
 

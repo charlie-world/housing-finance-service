@@ -13,4 +13,3 @@ services:
 
 script:
   - sbt clean scalafmt::test test
-  - sbt 'set test in assembly := {}' clean assembly

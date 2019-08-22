@@ -48,6 +48,7 @@ trait HousingFinanceServiceImpl extends HousingFinanceService {
                 .map(_ ⇒ s.copy(sumAmount = sum, avgAmount = avg))
             case None ⇒
               saveSummaries(institueId, year, sum, avg)
+                .map(id ⇒ Summary(Some(id), year, institueId, sum, avg))
           }
       }
 

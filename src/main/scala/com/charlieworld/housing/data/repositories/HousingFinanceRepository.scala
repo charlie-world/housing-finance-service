@@ -18,9 +18,9 @@ trait HousingFinanceRepository {
     year: Int,
     month: Int,
     amount: Long
-  ): Task[CreditGuarantee]
+  ): Task[Long]
 
-  def saveSummaries(instituteId: Long, year: Int, sumAmount: Long, avgAmount: Long): Task[Summary]
+  def saveSummaries(instituteId: Long, year: Int, sumAmount: Long, avgAmount: Long): Task[Long]
 
   def updateSummary(summaryId: Long, sumAmount: Long, avgAmount: Long): Task[_]
 

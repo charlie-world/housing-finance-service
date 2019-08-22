@@ -6,5 +6,4 @@ import monix.eval.Task
 trait UserService {
   def signIn(email: String, password: String): Task[JWTResponse]
   def signUp(email: String, password: String): Task[JWTResponse]
-  def refresh(userId: Long): Task[JWTResponse]
 }

@@ -1,11 +1,11 @@
 package com.charlieworld.housing.routes
 
 import akka.http.scaladsl.server.Route
-import com.charlieworld.housing.AppSuite
+import com.charlieworld.housing.{AppSuite, Logging}
 import com.charlieworld.housing.services.HousingFinanceService
 
 trait HousingFinanceRoute extends BaseRoute {
-  this: HousingFinanceService with AppSuite ⇒
+  this: HousingFinanceService with AppSuite with Logging ⇒
 
   def housingFinanceRoutes: Route =
     pathPrefix("housing-finance") {
