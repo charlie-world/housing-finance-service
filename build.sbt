@@ -8,7 +8,7 @@ lazy val root = (project in file(".")).settings(
     )
   ),
   name := "housing-finance-service",
-  version := "0.0.1",
+  version := "1.0.0",
   scalacOptions ++= Seq(
     "-unchecked",
     "-feature",
